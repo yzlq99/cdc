@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  maxwell:
+    container_name: maxwell
+    image: zendesk/maxwell
+    command: ./bin/maxwell --user='maxwell' --password='maxwell' --host='47.112.200.141' --producer=kafka --kafka.bootstrap.servers=172.23.0.14:9092 --kafka_topic=maxwell --log=debug
+
+networks:
+  default:
+    external:   # 使用已创建的网络
+      name: zookeeper_network
