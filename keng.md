@@ -485,3 +485,6 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 "handling.mode":"warn"
 }
 }'
+
+
+connect restful api https://docs.confluent.io/platform/current/connect/references/restapi.html
