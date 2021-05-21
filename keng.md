@@ -368,6 +368,14 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 curl -H "Accept:application/json" 172.23.0.21:8083/connectors/
 ```
 
+```bash
+curl -H "Accept:application/json" 192.168.88.123:8093/connectors/yzl_pevc/status
+```
+
+```bash
+curl -i -X POST 192.168.88.123:8093/connectors/pevc_yzl_v5/tasks/0/restart
+```
+
 - 开发站
 ```bash
 curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 172.23.0.21:8083/connectors/ -d '{
@@ -395,8 +403,8 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 
 - 开发站
 ```bash
-curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 172.33.0.21:8083/connectors/ -d '{
-    "name": "dp_enterprise_dev",
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 192.168.88.123:8093/connectors/ -d '{
+    "name": "pevc_yzl_v5",
     "config": {
         "connector.class": "io.debezium.connector.mysql.MySqlConnector",
         "tasks.max": "1",
@@ -404,11 +412,13 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
         "database.port": "3306",
         "database.user": "debezium",
         "database.password": "pacman",
-        "database.server.id": "184054",
-        "database.server.name": "dp_enterprise",
-        "database.whitelist": "alignment",
+        "database.server.id": "2021052101",
+        "database.server.name": "pevc_yzl_v5",
+        "database.whitelist": "pevc",
         "database.history.kafka.bootstrap.servers": "kafka1:9092",
-        "database.history.kafka.topic": "dp_enterprise_dev"
+        "database.history.kafka.topic": "pevc_yzl_v5_history",
+        "snapshot.mode":"schema_only",
+        "snapshot.locking.mode":"none"
     }
 }'
 ```
@@ -488,3 +498,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 
 
 connect restful api https://docs.confluent.io/platform/current/connect/references/restapi.html
+
+
+
+监控 connect https://debezium.io/documentation/reference/1.4/operations/monitoring.html
