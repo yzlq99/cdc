@@ -373,7 +373,7 @@ curl -H "Accept:application/json" 192.168.88.123:8093/connectors/yzl_pevc/status
 ```
 
 ```bash
-curl -i -X POST 192.168.88.123:8093/connectors/pevc_yzl_v5/tasks/0/restart
+curl -i -X POST 192.168.88.123:8093/connectors/pevc_yzl_v7/tasks/0/restart
 ```
 
 - 开发站
@@ -404,7 +404,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 - 开发站
 ```bash
 curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 192.168.88.123:8093/connectors/ -d '{
-    "name": "pevc_yzl_v5",
+    "name": "pevc_yzl_v7",
     "config": {
         "connector.class": "io.debezium.connector.mysql.MySqlConnector",
         "tasks.max": "1",
@@ -413,12 +413,13 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
         "database.user": "debezium",
         "database.password": "pacman",
         "database.server.id": "2021052101",
-        "database.server.name": "pevc_yzl_v5",
+        "database.server.name": "pevc_yzl_v7",
         "database.whitelist": "pevc",
         "database.history.kafka.bootstrap.servers": "kafka1:9092",
-        "database.history.kafka.topic": "pevc_yzl_v5_history",
+        "database.history.kafka.topic": "pevc_yzl_v7_history",
         "snapshot.mode":"schema_only",
-        "snapshot.locking.mode":"none"
+        "snapshot.locking.mode":"none",
+        "message.key.columns": "pevc.amac_funds:fund_union_id"
     }
 }'
 ```
@@ -502,3 +503,24 @@ connect restful api https://docs.confluent.io/platform/current/connect/reference
 
 
 监控 connect https://debezium.io/documentation/reference/1.4/operations/monitoring.html
+
+
+**问题**
+1. 
+```
+2021-05-24 03:37:39,974 ERROR  ||  WorkerSourceTask{id=pevc_yzl_v5-0} Task threw an uncaught and unrecoverable exception   [org.apache.kafka.connect.runtime.WorkerTask]
+org.apache.kafka.connect.errors.ConnectException: Unrecoverable exception from producer send callback
+	at org.apache.kafka.connect.runtime.WorkerSourceTask.maybeThrowProducerSendException(WorkerSourceTask.java:263)
+	at org.apache.kafka.connect.runtime.WorkerSourceTask.sendRecords(WorkerSourceTask.java:317)
+	at org.apache.kafka.connect.runtime.WorkerSourceTask.execute(WorkerSourceTask.java:245)
+	at org.apache.kafka.connect.runtime.WorkerTask.doRun(WorkerTask.java:184)
+	at org.apache.kafka.connect.runtime.WorkerTask.run(WorkerTask.java:234)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:515)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+Caused by: org.apache.kafka.common.InvalidRecordException: This record has failed the validation on broker and hence be rejected.
+```
+原因：缺少主键
+解决方案：设置 key `"message.key.columns": "pevc.amac_funds:fund_union_id"` [https://debezium.io/documentation/reference/1.4/connectors/mysql.html#mysql-property-message-key-columns]
